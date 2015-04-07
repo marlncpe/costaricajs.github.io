@@ -1,0 +1,216 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>Consejos para utilizar Angular.js con Parse | CostaRicaJS</title>
+  <meta name="author" content="CostaRicaJS">
+  
+  <meta name="description" content="Comunidad de profesionales en desarrollo de software que prefieren javascript. Organizamos reuniones abiertas en un ambiente informal para intercambiar ideas y compartir nuestros conocimientos en tecnología, técnicas y herramientas de desarrollo. 
+ Somos parte de &lt;a target=&#39;_blank&#39; href=&#39;http://communityjs.org&#39; &gt;CommunityJS&lt;/a&gt;. Visita nuestro calendario de eventos en &lt;a target=&#39;_blank&#39; href=&#39;http://meetup.com/CostaRicaJS&#39;&gt;meetup.com/costaricajs&lt;/a&gt;">
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  <meta property="og:title" content="Consejos para utilizar Angular.js con Parse"/>
+  <meta property="og:site_name" content="CostaRicaJS"/>
+
+  
+    <meta property="og:image" content="undefined"/>
+  
+
+  <link href="/favicon.png" rel="icon">
+  <link rel="alternate" href="http://feeds.feedburner.com/costaricajs" title="CostaRicaJS" type="application/atom+xml">
+  <link rel="stylesheet" href="/css/style.css" media="screen" type="text/css">
+  <!--[if lt IE 9]><script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.8/jquery.min.js"></script>
+  
+<script type="text/javascript">
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-33524638-2', 'http://costaricajs.github.io');
+  ga('send', 'pageview');
+</script>
+
+</head>
+
+<body>
+  <header id="header" class="inner"><div class="alignleft">
+  <h1><a href="/">CostaRicaJS</a></h1>
+  <h2><a href="/">Comunidad de Desarrollo en Javascript en Costa Rica.</a></h2>
+</div>
+<nav id="main-nav">
+  <ul>
+    
+      <li><a href="http://meetup.com/costaricajs">Eventos</a></li>
+    
+      <li><a href="/archives">Archivos</a></li>
+    
+  </ul>
+  <div class="clearfix"></div>
+</nav>
+<div class="clearfix"></div></header>
+  <div id="content" class="inner">
+    <div id="wrapper"><article class="post">
+  
+    <div class="gallery">
+  <div class="photoset">
+    
+      <img src="">
+    
+  </div>
+  <div class="control">
+    <div class="prev"></div>
+    <div class="next"></div>
+  </div>
+</div>
+  
+  <div class="post-content">
+    <header>
+      
+  
+    <h1 class="title">Consejos para utilizar Angular.js con Parse</h1>
+  
+
+      
+        <p class="published">
+          Published: <time datetime="2015-03-08T02:56:30.000Z">7 Mar 2015</time>
+        </p>
+      
+    </header>
+    <div class="entry">
+      
+        <p>Actualmente estoy trabajando en <a href="https://slidebean.com" target="_blank" rel="external">Slidebean</a>, una aplicación de la cual soy co-fundador. Slidebean permite crear presentaciones con excelente diseño en minutos. <a href="https://www.slidebean.com" target="_blank" rel="external">Revísenlo aquí</a>, ¡es gratis!</p>
+<p>Para Slidebean, decidí usar dos de los <em>frameworks</em> de aplicaciones más populares en este momento: <a href="http://angularjs.org/" target="_blank" rel="external">AngularJS</a> como <em>framework MVC</em> en javascript, y <a href="http://parse.com/" target="_blank" rel="external">Parse</a> como solución de <em>back-end</em> y almacenamiento en la nube. Si no han escuchado de ellos, los invito a que les echen un ojo, porque cada día se hacen más populares.</p>
+<p>De entrada topé con algunos problemas de incompatibilidad al mezclar Parse con AngularJS. Las siguientes son algunas técnicas que descubrí sobre la marcha para combinarlos, que espero les ahorre tiempo si van a utilizarlos.</p>
+<a id="more"></a>
+<h3 id="1-_Definir_getters_y_setters_para_cada_propiedad_de_sus_clases_de_Parse">1. Definir <em>getters</em> y <em>setters</em> para cada propiedad de sus clases de Parse</h3><p>Parse permite obtener y almacenar propiedades en sus clases utilizando los métodos <code>get</code> y <code>set</code> de <code>Parse.Object</code>. En Slidebean, los usuarios crean presentaciones (<code>Presentation</code>), las cuales tienen una propiedad llamada <code>title</code> para el título. Digamos entonces que tenemos una variable <code>presentation</code> en el <code>$scope</code> de nuestro controlador, y queremos desplegar el título en una vista HTML. Haríamos algo como esto:</p>
+<figure class="highlight handlebars"><table><tr><td class="code"><pre><span class="line"><span class="xml"><span class="tag">&lt;<span class="title">div</span>&gt;</span> </span><span class="expression">&#123;&#123; <span class="variable">presentation.get</span>(<span class="string">"title"</span>) &#125;&#125;</span><span class="xml">  <span class="tag">&lt;/<span class="title">div</span>&gt;</span></span></span><br></pre></td></tr></table></figure>
+<p>Sin embargo, AngularJS utiliza las propiedades simples de los objetos en javascript para leer y cambiar sus valores. Así que si quisiéramos cambiar el título de la presentación usando un campo <code>input</code>, la directiva <code>ng-model</code> no nos serviría:</p>
+<figure class="highlight xml"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="title">input</span> <span class="attribute">type</span>=<span class="value">"text"</span> <span class="attribute">ng-model</span>=<span class="value">"presentation.set('title')"</span>&gt;</span> </span><br><span class="line"><span class="comment">&lt;!-- Esto no tiene sentido, pero es para que se entienda el ejemplo: --&gt;</span></span><br></pre></td></tr></table></figure>
+<p>Una forma de solucionar este problema que sugiere <a href="https://github.com/jimrhoskins/angular-parse" target="_blank" rel="external">este artículo</a>, es olvidarse de usar el <em>Javascript SDK</em> de Parse y usar su <em>REST API</em> directamente para trabajar con los modelos. Pero hay una solución mucho más simple, y es nada más definir <code>getters</code> y <code>setters</code> en cada una de sus clases de Parse. Así que usando AngularJS, usamos <code>factory</code> para definir una clase modelo llamada <code>Presentation</code>. El truco es que, adentro, también definimos un <code>getter</code> y un <code>setter</code> para cada propiedad. En este ejemplo, sólo tenemos una que se llama <code>title</code>:</p>
+<figure class="highlight actionscript"><table><tr><td class="code"><pre><span class="line">angular.module(<span class="string">'SlidebeanModels'</span>).</span><br><span class="line">  factory(<span class="string">'Presentation'</span>, <span class="function"><span class="keyword">function</span><span class="params">()</span> </span>&#123;</span><br><span class="line"> </span><br><span class="line">    <span class="keyword">var</span> Presentation = Parse.Object.extend(<span class="string">"Presentation"</span>, &#123;</span><br><span class="line">      <span class="comment">// Instance methods</span></span><br><span class="line">    &#125;, &#123;</span><br><span class="line">      <span class="comment">// Class methods</span></span><br><span class="line">    &#125;);</span><br><span class="line"> </span><br><span class="line">    <span class="comment">// Title property</span></span><br><span class="line">    Object.defineProperty(Presentation.prototype, <span class="string">"title"</span>, &#123;</span><br><span class="line">      <span class="keyword">get</span>: <span class="function"><span class="keyword">function</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">this</span>.<span class="keyword">get</span>(<span class="string">"title"</span>);</span><br><span class="line">      &#125;,</span><br><span class="line">      <span class="keyword">set</span>: <span class="function"><span class="keyword">function</span><span class="params">(aValue)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.<span class="keyword">set</span>(<span class="string">"title"</span>, aValue);</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;);</span><br><span class="line"> </span><br><span class="line">    <span class="keyword">return</span> Presentation;</span><br><span class="line">  &#125;);</span><br></pre></td></tr></table></figure>
+<p>Ahora sí tenemos una clase modelo que funciona sin problemas con <code>ng-model</code>. Entonces, para actualizar el título de la presentación sólo tenemos que hacer esto:</p>
+<figure class="highlight fsharp"><table><tr><td class="code"><pre><span class="line">&lt;input <span class="class"><span class="keyword">type</span></span>=<span class="string">"text"</span> ng-model=<span class="string">"presentation.title"</span>&gt;</span><br></pre></td></tr></table></figure>
+<p>Mucho mejor :)</p>
+<p>Esto funciona para propiedades con valores <em>simples</em> como <em>strings</em> o números. Pero, ¿qué pasa si tuviéramos una propiedad que contiene un puntero hacia otra clase de Parse? También se puede; nada más hay que asegurarse de incluir esa otra clase como dependencia de la primera para que así los <em>queries</em> funcionen sin problema.</p>
+<p>Digamos que existe una clase <code>Comentario</code> y una clase <code>Noticia</code>, y que <code>Comentario</code> tiene una propiedad llamada <code>noticiaPadre</code>, la cual es un puntero hacia la <code>Noticia</code> a la que pertenece el <code>Comentario</code>. Si se agrega un <code>getter</code> en <code>Comentario</code> para <code>noticiaPadre</code> <strong>sin</strong> incluir la clase <code>Noticia</code> como una dependencia de <code>Comentario</code>, entonces ese <code>getter</code> siempre retornaría una instancia de <code>Parse.Object</code>. Pero si se incluye <code>Noticia</code> como dependencia, el <code>getter</code> retornará una instancia de <code>Noticia</code>.</p>
+<p>Este truco suena más complicado de lo que es, jeje. Es similar a lo que se menciona en el punto #3  sobre la clase especial para <code>User</code>.</p>
+<h3 id="2-_Almacenar_su_usuario_actual_de_Parse_(Parse-current())_en_el_$rootScope">2. Almacenar su usuario actual de Parse (<code>Parse.current()</code>) en el $rootScope</h3><p>He leído que (casi) nunca se deben agregar variables al <code>$rootScope</code> de su aplicación de AngularJS. Parse provee un método muy conveniente para obtener el usuario que tiene una sesión actual, <code>Parse.User.current()</code>. El problema es que los cambios que suceden en esta variable de usuario suceden afuera del mundo de AngularJS, y entonces es difícil seguirles la pista y que sean <em>digeridos</em> por Angular. Me parece muy conveniente, entonces, almacenar el usuario actual de Parse en una variable en el <code>$rootScope</code> llamada <code>sessionUser</code> (o como quiera llamarla), y así también está disponible en el <code>$scope</code> de cualquier controlador de la aplicación. Esta variable es inicializada apenas comienza el app de AngularJS:</p>
+<figure class="highlight php"><table><tr><td class="code"><pre><span class="line">angular.module(<span class="string">'SlidebeanApp'</span>)</span><br><span class="line">  .config(<span class="function"><span class="keyword">function</span> <span class="params">(<span class="variable">$routeProvider</span>, <span class="variable">$locationProvider</span>)</span> </span>&#123;</span><br><span class="line">    <span class="comment">// Config goes here</span></span><br><span class="line">  &#125;)</span><br><span class="line">  .run(<span class="function"><span class="keyword">function</span><span class="params">(<span class="variable">$rootScope</span>)</span> </span>&#123;</span><br><span class="line"> </span><br><span class="line">    Parse.initialize(<span class="string">"parse app"</span>, <span class="string">"parse credentials"</span>);</span><br><span class="line"> </span><br><span class="line">    <span class="variable">$rootScope</span>.sessionUser = Parse.User.current();</span><br><span class="line"> </span><br><span class="line">  &#125;);</span><br></pre></td></tr></table></figure>
+<p>Para mantener las cosas un poco ordenadas, hice un <em>singleton</em> llamado <code>SessionService</code>, y la idea es que este sea el único lugar donde se manipula la variable <code>$rootScope.sessionUser</code>. Este servicio maneja inicios y finales de sesión (<em>log in &amp; log out</em>), y actualiza la variable según corresponda.</p>
+<p>Por ejemplo, un controlador de una barra de navegación que despliega el usuario actual puede reaccionar a esta variable, y modificar la forma en que se ve:</p>
+<figure class="highlight xml"><table><tr><td class="code"><pre><span class="line"><span class="comment">&lt;!-- Mostrar botones de Ingresar and Registrarse cuando no hay una sesión --&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="title">ul</span> <span class="attribute">ng-show</span>=<span class="value">"sessionUser == null"</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="title">li</span>&gt;</span><span class="tag">&lt;<span class="title">button</span> <span class="attribute">type</span>=<span class="value">"button"</span> <span class="attribute">ng-click</span>=<span class="value">"ingresar()"</span>&gt;</span>Ingresar<span class="tag">&lt;/<span class="title">button</span>&gt;</span><span class="tag">&lt;/<span class="title">li</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="title">li</span>&gt;</span><span class="tag">&lt;<span class="title">button</span> <span class="attribute">type</span>=<span class="value">"button"</span> <span class="attribute">ng-click</span>=<span class="value">"registrarse()"</span>&gt;</span>Registrarse<span class="tag">&lt;/<span class="title">button</span>&gt;</span><span class="tag">&lt;/<span class="title">li</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="title">ul</span>&gt;</span></span><br><span class="line"> </span><br><span class="line"><span class="comment">&lt;!-- Mostrar al usuario actual cuando haya una sesión --&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="title">ul</span> <span class="attribute">ng-show</span>=<span class="value">"sessionUser != null"</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="title">li</span> <span class="attribute">class</span>=<span class="value">"dropdown"</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="title">a</span> <span class="attribute">href</span>=<span class="value">"#"</span> <span class="attribute">class</span>=<span class="value">"dropdown-toggle"</span> <span class="attribute">data-toggle</span>=<span class="value">"dropdown"</span>&gt;</span></span><br><span class="line">      </span><br><span class="line">      <span class="tag">&lt;<span class="title">b</span> <span class="attribute">class</span>=<span class="value">"caret"</span>&gt;</span><span class="tag">&lt;/<span class="title">b</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="title">a</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="title">ul</span> <span class="attribute">class</span>=<span class="value">"dropdown-menu"</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="title">li</span>&gt;</span><span class="tag">&lt;<span class="title">a</span> <span class="attribute">ng-href</span>=<span class="value">"/perfil"</span>&gt;</span>Perfil<span class="tag">&lt;/<span class="title">a</span>&gt;</span><span class="tag">&lt;/<span class="title">li</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="title">li</span>&gt;</span><span class="tag">&lt;<span class="title">a</span> <span class="attribute">ng-href</span>=<span class="value">"#"</span> <span class="attribute">ng-click</span>=<span class="value">"salir()"</span>&gt;</span>Salir<span class="tag">&lt;/<span class="title">a</span>&gt;</span><span class="tag">&lt;/<span class="title">li</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="title">ul</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;/<span class="title">li</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="title">ul</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<h3 id="3-_Extender_Parse-User_e_incluirlo_desde_el_inicio">3. Extender Parse.User e incluirlo desde el inicio</h3><p>Me pareció que la documentación para extender la clase <code>Parse.User</code> no es muy clara. Pero básicamente, si uno quiere extenderla, es igual de fácil que extender cualquier otro <code>Parse.Object</code>. La clave es: <strong>asegúrese de incluir su clase especial antes de llamar a <code>Parse.User.current()</code> por primera vez</strong>, para que así reciba una instancia de su clase.</p>
+<p>En Slidebean, quería tener un método especial llamado <code>getImage</code> para los usuarios, donde se abstrajera la complejidad de obtener la imagen del usuario ya sea de Facebook o de Gravatar. Así que extendí la clase <code>Parse.User</code> de esta manera:</p>
+<figure class="highlight actionscript"><table><tr><td class="code"><pre><span class="line">angular.module(<span class="string">'SlidebeanModels'</span>).</span><br><span class="line">  factory(<span class="string">'SlidebeanUser'</span>, <span class="function"><span class="keyword">function</span><span class="params">()</span> </span>&#123;</span><br><span class="line"> </span><br><span class="line">    <span class="keyword">var</span> User = Parse.User.extend(&#123;</span><br><span class="line"> </span><br><span class="line">      getImage : <span class="function"><span class="keyword">function</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="comment">// retornar la imagen de facebook o de gravatar</span></span><br><span class="line">      &#125;</span><br><span class="line"> </span><br><span class="line">    &#125;, &#123;</span><br><span class="line">      <span class="comment">// Métodos estáticos</span></span><br><span class="line">    &#125;);</span><br><span class="line"> </span><br><span class="line">    <span class="keyword">return</span> User;</span><br><span class="line">  &#125;);</span><br></pre></td></tr></table></figure>
+<p>Luego, nada más nos aseguramos de incluir nuestra clase <code>SlidebeanUser</code> como dependencia del método <code>run</code> de nuestro app:</p>
+<figure class="highlight php"><table><tr><td class="code"><pre><span class="line">.run(<span class="function"><span class="keyword">function</span><span class="params">(<span class="variable">$rootScope</span>, <span class="variable">$location</span>, SlidebeanUser)</span> </span>&#123;</span><br><span class="line">  Parse.initialize(<span class="string">"app id"</span>, <span class="string">"llave"</span>);</span><br><span class="line"> </span><br><span class="line">  <span class="comment">// Ahora esto SI es una instancia de SlidebeanUser :)</span></span><br><span class="line">  <span class="variable">$rootScope</span>.sessionUser = SlidebeanUser.current();</span><br><span class="line"> </span><br><span class="line">  <span class="comment">// y esto sí funciona (si hay una sesión de usuario, obviamente):</span></span><br><span class="line">  <span class="keyword">var</span> imageUrl = <span class="variable">$rootScope</span>.sessionUser.getImage();</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+<h3 id="4-_Retrase_la_inicialización_del_SDK_de_Facebook_hasta_después_de_Parse-">4. Retrase la inicialización del SDK de Facebook hasta después de Parse.</h3><p>Si permite que los usuarios inicien sesiones a su aplicación utilizando Facebook, entonces es buena idea cargar el SDK de Facebook hasta que se haya inicializado el SDK de Parse. Y también es buena idea inicializar el SDK de Parse hasta que el app de AngularJS haya arrancado. En general, entonces, es buena idea tener todo el código de inicialización en un solo lugar, y un buen lugar para hacerlo es en el método <code>run</code> de su app de Angular.</p>
+<p>En Slidebean (y sospecho que en muchas aplicaciones), el orden de inicialización sigue así:</p>
+<ol>
+<li>AngularJS</li>
+<li>Parse</li>
+<li>Facebook</li>
+</ol>
+<p>y para lograrlo, nuestro método <code>run</code> luce así. Note cómo el código de inicialización del SDK de Facebook está aquí, en vez de estar en alguna parte del HTML donde normalmente se sugiere que se coloque:</p>
+<figure class="highlight php"><table><tr><td class="code"><pre><span class="line">.run(<span class="function"><span class="keyword">function</span><span class="params">(<span class="variable">$rootScope</span>, <span class="variable">$location</span>, SlidebeanUser)</span> </span>&#123;</span><br><span class="line"> </span><br><span class="line">  <span class="comment">// 1) App de Angular ya está listo y corriendo.</span></span><br><span class="line"> </span><br><span class="line">  <span class="comment">// 2) Inicializar Parse y poner el usuario actual en el $rootScope</span></span><br><span class="line">  Parse.initialize(<span class="string">"app id"</span>, <span class="string">"llave"</span>);</span><br><span class="line"> </span><br><span class="line">  <span class="variable">$rootScope</span>.sessionUser = SlidebeanUser.current();</span><br><span class="line"> </span><br><span class="line">  <span class="comment">// 3) Finalmente, inicializar Facebook</span></span><br><span class="line">  window.fbAsyncInit = <span class="function"><span class="keyword">function</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    Parse.FacebookUtils.init(&#123;</span><br><span class="line">      appId: <span class="string">'facebook app id'</span>,</span><br><span class="line">      channelUrl : <span class="string">'//www.slidebean.com/fbchannel.html'</span>,</span><br><span class="line">      status: <span class="keyword">true</span>,</span><br><span class="line">      cookie: <span class="keyword">true</span>,</span><br><span class="line">      xfbml: <span class="keyword">true</span></span><br><span class="line">    &#125;);</span><br><span class="line">  &#125;;</span><br><span class="line">  (<span class="function"><span class="keyword">function</span><span class="params">(d, s, id)</span></span>&#123;</span><br><span class="line">    <span class="keyword">var</span> js, fjs = d.getElementsByTagName(s)[<span class="number">0</span>];</span><br><span class="line">    <span class="keyword">if</span> (d.getElementById(id)) &#123;<span class="keyword">return</span>;&#125;</span><br><span class="line">    js = d.createElement(s); js.id = id;</span><br><span class="line">    js.src = <span class="string">"//connect.facebook.net/en_US/all.js"</span>;</span><br><span class="line">    fjs.parentNode.insertBefore(js, fjs);</span><br><span class="line">  &#125;(document, <span class="string">'script'</span>, <span class="string">'facebook-jssdk'</span>));</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+<p>Pero no olvide colocar esto en el HTML, ya que es algo que el SDK de Facebook requiere:</p>
+<figure class="highlight applescript"><table><tr><td class="code"><pre><span class="line">&lt;<span class="keyword">div</span> <span class="property">id</span>=<span class="string">"fb-root"</span>&gt;&lt;/<span class="keyword">div</span>&gt;</span><br></pre></td></tr></table></figure>
+<h3 id="5-_Envolver_los_llamados_asíncronos_de_Parse_dentro_de_promesas_$q">5. Envolver los llamados asíncronos de Parse dentro de promesas $q</h3><p>Se dará cuenta de que es buena idea envolver los llamados asíncronos de Parse dentro de promesas de AngularJS, en vez de nada más ejecutar los <em>queries</em> de Parse directamente en sus modelos y controladores. Uno de los beneficios es que los cambios en sus variables serán digeridos automáticamente por AngularJS.</p>
+<p>Digamos que en Slidebean quisiéramos obtener todas las presentaciones que le pertenecen al usuario actual. Primero definimos una clase modelo llamada <code>Presentation</code> con un método estático para obtener las presentaciones según su dueño. Dentro de este método, envolvemos el <em>query</em> asíncrono usando una promesa <code>$q</code>:</p>
+<figure class="highlight actionscript"><table><tr><td class="code"><pre><span class="line">angular.module(<span class="string">'SlidebeanModels'</span>).</span><br><span class="line">  factory(<span class="string">'Presentation'</span>, <span class="function"><span class="keyword">function</span><span class="params">($q)</span> </span>&#123;</span><br><span class="line"> </span><br><span class="line">    <span class="keyword">var</span> Presentation = Parse.Object.extend(<span class="string">"Presentation"</span>, &#123;</span><br><span class="line">      <span class="comment">// Instance methods</span></span><br><span class="line">    &#125;, &#123;</span><br><span class="line">      <span class="comment">// Class methods</span></span><br><span class="line"> </span><br><span class="line">      listByUser: <span class="function"><span class="keyword">function</span><span class="params">(aUser)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">var</span> defer = $q.defer();</span><br><span class="line"> </span><br><span class="line">        <span class="keyword">var</span> query = <span class="keyword">new</span> Parse.Query(<span class="keyword">this</span>);</span><br><span class="line">        query.equalTo(<span class="string">"owner"</span>, aUser);</span><br><span class="line">        query.find().then(<span class="function"><span class="keyword">function</span><span class="params">(aPresentations)</span> </span>&#123;</span><br><span class="line">          defer.resolve(aPresentations);</span><br><span class="line">        &#125;).fail(<span class="function"><span class="keyword">function</span><span class="params">(error)</span> </span>&#123;</span><br><span class="line">          defer.reject(error);</span><br><span class="line">        &#125;);</span><br><span class="line"> </span><br><span class="line">        <span class="keyword">return</span> defer.promise;</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;);</span><br><span class="line"> </span><br><span class="line">    <span class="comment">// Properties</span></span><br><span class="line">    Object.defineProperty(Presentation.prototype, <span class="string">"owner"</span>, &#123;</span><br><span class="line">      <span class="keyword">get</span>: <span class="function"><span class="keyword">function</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">this</span>.<span class="keyword">get</span>(<span class="string">"owner"</span>);</span><br><span class="line">      &#125;,</span><br><span class="line">      <span class="keyword">set</span>: <span class="function"><span class="keyword">function</span><span class="params">(aValue)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.<span class="keyword">set</span>(<span class="string">"owner"</span>, aValue);</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;);</span><br><span class="line">    Object.defineProperty(Presentation.prototype, <span class="string">"title"</span>, &#123;</span><br><span class="line">      <span class="keyword">get</span>: <span class="function"><span class="keyword">function</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">this</span>.<span class="keyword">get</span>(<span class="string">"title"</span>);</span><br><span class="line">      &#125;,</span><br><span class="line">      <span class="keyword">set</span>: <span class="function"><span class="keyword">function</span><span class="params">(aValue)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.<span class="keyword">set</span>(<span class="string">"title"</span>, aValue);</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;);</span><br><span class="line"> </span><br><span class="line"> <span class="keyword">return</span> Presentation;</span><br><span class="line"> &#125;);</span><br></pre></td></tr></table></figure>
+<p>Luego, dentro de cualquier controlador, si queremos obtener las presentaciones hacemos algo como esto:</p>
+<figure class="highlight php"><table><tr><td class="code"><pre><span class="line">angular.module(<span class="string">'SlidebeanApp'</span>)</span><br><span class="line">  .controller(<span class="string">'DashboardCtrl'</span>, <span class="function"><span class="keyword">function</span><span class="params">(<span class="variable">$scope</span>, Presentation)</span> </span>&#123;</span><br><span class="line"> </span><br><span class="line">    Presentation.listByUser(<span class="variable">$scope</span>.sessionUser).then(<span class="function"><span class="keyword">function</span><span class="params">(aPresentations)</span> </span>&#123;</span><br><span class="line">      <span class="variable">$scope</span>.presentations = aPresentations;</span><br><span class="line">    &#125;, <span class="function"><span class="keyword">function</span><span class="params">(aError)</span> </span>&#123;</span><br><span class="line">      <span class="comment">// Something went wrong, handle the error</span></span><br><span class="line">    &#125;);</span><br><span class="line">  &#125;);</span><br></pre></td></tr></table></figure>
+<p>Y listo. Ahora la lista de presentaciones se puede desplegar en HTML utilizando <code>ng-repeat</code>. </p>
+<p>===== </p>
+<p>Eso es todo por ahora. Si tienen más tips, preguntas o comentarios, no duden contactarme por Twitter <a href="http://twitter.com/jozenwike" target="_blank" rel="external">@jozenwike</a> ^<em>__</em>^</p>
+<p>También pueden ver el original de esta noticia y otros artículos en mi <a href="https://josebolanos.wordpress.com/2013/09/30/5-tips-for-using-parse-with-angularjs/" target="_blank" rel="external">blog</a>.</p>
+
+      
+    </div>
+    
+    
+  <div class="author">
+    <img class='author-image' src='http://pbs.twimg.com/profile_images/378800000187243859/2a32f7d9e8b815a398d3412d46511d5c_400x400.jpeg' />
+    <p class='author-name'>Jose Enrique Bolaños</p>
+    <p class='author-bio'>Desarrollador de Software. Cofundador y CTO de Slidebean</p>
+    <p class='author-sites'>
+      <a href='http://twitter.com/jozenwike' target='_blank'>twitter</a>
+      
+       <a href='http://josebolanos.wordpress.com' target='_blank'>website</a>
+    </p>
+
+  </div>
+  <div class="clearfix"></div>
+
+
+    
+    <footer>
+      
+
+      <div class="clearfix"></div>
+    </footer>
+  </div>
+</article>
+<!-- hackish -->
+
+  
+<section id="comment">
+          <span class='st_facebook' displayText='Facebook'></span>
+<span class='st_twitter' displayText='Tweet'></span>
+<span class='st_linkedin' displayText='LinkedIn'></span>
+<span class='st_googleplus' displayText='Google +'></span>
+<span class='st_reddit' displayText='Reddit'></span>
+<span class='st_sharethis' displayText='ShareThis'></span>
+<span class='st_email' displayText='Email'></span>
+  <h1 class="title">Comments</h1>
+  <div id="disqus_thread">
+    <noscript>Please enable JavaScript to view the <a href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+  </div>
+</section>
+
+
+</div>
+    <div class="clearfix"></div>
+  </div>
+  <footer id="footer" class="inner"><div class="alignleft">
+  Desarrollado con javascript por <a target="_blank" href="http://gaboesquivel.com" alt="Gabo Esquivel: Javascript Developer">Gabo Esquivel</a>. Contribuye en <a target="_blank" href="http://github.com/costaricajs/costaricajs.github.io">Github</a>.
+
+  
+  &copy; 2015 CostaRicaJS
+  
+</div>
+<div class="clearfix"></div>
+</footer>
+  
+<script type="text/javascript">
+var disqus_shortname = 'costaricajs';
+
+(function(){
+  var dsq = document.createElement('script');
+  dsq.type = 'text/javascript';
+  dsq.async = true;
+  dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+  (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+}());
+</script>
+
+
+<script type="text/javascript">
+(function(){
+    !function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');
+}());
+</script>
+
+
+<a href="https://github.com/CostaRicaJS/costaricajs.github.io"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://camo.githubusercontent.com/a6677b08c955af8400f44c6298f40e7d19cc5b2d/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f72696768745f677261795f3664366436642e706e67" alt="Fork me on GitHub" data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_right_gray_6d6d6d.png"></a>
+
+<script type="text/javascript">var switchTo5x=true;</script>
+<script type="text/javascript" src="http://w.sharethis.com/button/buttons.js"></script>
+<script type="text/javascript">stLight.options({publisher: "37c69562-a76a-4f8f-92f3-633301f43292", doNotHash: false, doNotCopy: false, hashAddressBar: false});</script>
+</body>
+</html>

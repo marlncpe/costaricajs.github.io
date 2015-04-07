@@ -1,0 +1,192 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>La Arquitectura Flux | CostaRicaJS</title>
+  <meta name="author" content="CostaRicaJS">
+  
+  <meta name="description" content="Flux es una arquitectura diseñada por Facebook junto con React, la librería para vistas. Se enfoca en crear flujos de datos explícitos y entendibles, lo cual hace más sencillo seguir los cambios en el estado de la applicación y por ende los errores más fáciles de encontrar y corregir.">
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  <meta property="og:title" content="La Arquitectura Flux"/>
+  <meta property="og:site_name" content="CostaRicaJS"/>
+
+  
+    <meta property="og:image" content="http://costaricajs.github.io/2015/03/La-Arquitectura-Flux/flux-simple.png" />
+  
+
+  <link href="/favicon.png" rel="icon">
+  <link rel="alternate" href="http://feeds.feedburner.com/costaricajs" title="CostaRicaJS" type="application/atom+xml">
+  <link rel="stylesheet" href="/css/style.css" media="screen" type="text/css">
+  <!--[if lt IE 9]><script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.8/jquery.min.js"></script>
+  
+<script type="text/javascript">
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-33524638-2', 'http://costaricajs.github.io');
+  ga('send', 'pageview');
+</script>
+
+</head>
+
+<body>
+  <header id="header" class="inner"><div class="alignleft">
+  <h1><a href="/">CostaRicaJS</a></h1>
+  <h2><a href="/">Comunidad de Desarrollo en Javascript en Costa Rica.</a></h2>
+</div>
+<nav id="main-nav">
+  <ul>
+    
+      <li><a href="http://meetup.com/costaricajs">Eventos</a></li>
+    
+      <li><a href="/archives">Archivos</a></li>
+    
+  </ul>
+  <div class="clearfix"></div>
+</nav>
+<div class="clearfix"></div></header>
+  <div id="content" class="inner">
+    <div id="wrapper"><article class="post">
+  
+    <div class="gallery">
+  <div class="photoset">
+    
+      <img src="">
+    
+  </div>
+  <div class="control">
+    <div class="prev"></div>
+    <div class="next"></div>
+  </div>
+</div>
+  
+  <div class="post-content">
+    <header>
+      
+  
+    <h1 class="title">La Arquitectura Flux</h1>
+  
+
+      
+        <p class="published">
+          Published: <time datetime="2015-03-11T22:24:12.000Z">11 Mar 2015</time>
+        </p>
+      
+    </header>
+    <div class="entry">
+      
+        <p>Flux es una arquitectura diseñada por Facebook junto con <a href="http://facebook.github.io/react/" target="_blank" rel="external">React</a>, la librería para vistas. Se enfoca en crear <strong>flujos de datos explícitos y entendibles</strong> , lo cual hace más sencillo seguir los cambios en el estado de la applicación y por ende los errores más fáciles de encontrar y corregir. </p>
+<div class="centered-img"><br><img src="/2015/03/La-Arquitectura-Flux/data-flow.png"><br></div>
+
+<p>Para comprender mejor la arquitectura Flux comparémola con MVC o Modelo-Vista-Controlador, uno de los patrones más utilizados en el desarrollo de aplicaciones. En MVC el controlador es responsable de coordinar los cambios en 1 o más modelos y lo hace mediante llamadas a métodos en los modelos. Cuando los modelos cambian, se notifican las vistas las cuales a su vez leen los nuevos datos del modelo y se actualizan de acuerdo a esos cambios para que el usuario pueda ver los nuevo datos o estado.<br><a id="more"></a></p>
+<div class="centered-img"><br><img src="/2015/03/La-Arquitectura-Flux/mvc-simple.png"><br></div>
+
+<p>Conforme la aplicación crece y se agregan más controladores, modelos y vistas las dependencias se vuelven más complejas</p>
+<div class="centered-img"><br><img src="/2015/03/La-Arquitectura-Flux/mvc-complejo.png"><br></div>
+
+<p>Cuando el usuario interactúa con la interfaz gráfica múltiples ramas de código son ejecutadas y encontrar errores y correr pruebas sobre el estado de la apliación se vuelve una tarea muy difícil en la cual básicamente se tiene que tratar de adivinar en cual de todos los puntos se encuentra el error. En los peores casos una interacción causa actualizaciones adicionales en cascada haciendo la tarea aún mas dura.</p>
+<p>Flux evita este diseño en favor de un flujo de datos en una sola direción. Todas las interaciones dentro de un vista llaman un “creador de acciones” que a su vez llama el “despachador” de tipo singleton que es responsable de emitir un evento de tipo “acción” al cual los “almacenes” se pueden subscribir. Estos “almacenes” responden a la acción y se autoactualizan.</p>
+<div class="centered-img"><br><img src="/2015/03/La-Arquitectura-Flux/flux-simple.png"><br></div>
+
+<p>El flujo no cambia mucho cuando se agregan almacenes y vistas adicionales. El despachador simplemente envía cada acción a todos los almacenes en la aplicación y no conoce los detalles de como estos almacenes se actualizan, cada almacén contiene su propia lógica de negocios. Cada almacén es reponsable de área o dominio de la apliación y se solo se autoactualizan en respuesta a acciones.</p>
+<div class="centered-img"><br><img src="/2015/03/La-Arquitectura-Flux/flux-complejo.png"><br></div>
+
+<p>Cuando los almacenes se actualizan emiten un evento “cambio” al cual los vistas reaccionan y actualizan la interfaz gráfica del usuario. En muchas aplicaciones basadas en React es común tener “contenedores” responsables for observar este evento, leer los nuevos datos en el almacén y pasar la información a través de propiedades a las vistas dentro del contenedor. Los contenedores encapsulan un componente de la interfaz gráfica, por ejemplo un caja de búsqueda con completación automática que se compone de varias vistas y componentes.</p>
+<h2 id="Caraterísticas_Principales">Caraterísticas Principales</h2><p>La arquitectura flux tiene propiedades que la hacen única y provee importantes garantías, todas giran alrededor de un flujo de datos explícito y fácil de entender, aumentando la capacidad de seguir, reproducir y realizar pruebas en estados de aplicación específicos.</p>
+<h3 id="Sincronía">Sincronía</h3><p>El despachador de acciones y las funciones dentro de los almacenes son síncronos. Todas las operaciones asincrónicas deben invocar una acción le comunica al sistema el resultado de la operación. Los creadores de acciones pueden llamar APIs asyncrónicamente, los almacenes idealmente no lo deben hacer. Esta regla hace que el flujo de información sea extremadamente explícito y en caso de errores facilmente se puede identificar la acción ese estado erróneo de la applicación.</p>
+<h3 id="Inversión_del_Control">Inversión del Control</h3><p>Los almacenes se autoactualizan en respuesta a acciones en lugar de ser acutalizados por un controllador o modulo similar, ningún otro componente de la aplicación contiene lógica sobre como actualizar el estado. Como las almacenes se autoactualizan y únicame sincrónicamente, realizar pruebas es tan sencillo como inicializar con un estado específico, invocar un acción y verificar que el estado final es el esperado. </p>
+<h3 id="Acciones_Semánticas">Acciones Semánticas</h3><p>Las acciones tienden a ser semanticamente descriptivas. Por ejemplo, en un chat basado en flux para marcar un conversación como leída probablemente se invocaría una acción de tipo “marcar_conversacion_como_leida”. La acción y el componente que genera la acción no saben como hacer la actualización, pero describe lo que quiere que suceda.</p>
+<p>Por esta propiedad raramente se tendrá que cambiar el tipo de las acciones, unicamente como los almacenes responden a ellas.</p>
+<h3 id="Cero_Acciones_en_Cascada">Cero Acciones en Cascada</h3><p>Flux no permite despachar una segunda acción como resultado de una primera acción, esto ayuda a prevenir actualizaciones en cascada que son difíciles de mantener y debuggear. Además ayuda a pensar en las interaciones de la applicación en una forma más semántica.</p>
+<div class="refs"><br><strong>Lectura Adicional en Inglés</strong><br><a href="http://facebook.github.io/flux/docs/overview.html" target="_blank" rel="external">Flux Application Architecture</a><br><a href="http://fluxxor.com/what-is-flux.html" target="_blank" rel="external">Texto Original en Inglés en fluxxor.com</a><br><a href="https://www.youtube.com/watch?v=nYkdrAPrdcw" target="_blank" rel="external">Video: Rethinking Web App Development at Facebook</a><br></div>
+      
+    </div>
+    
+    
+  <div class="author">
+    <img class='author-image' src='https://pbs.twimg.com/profile_images/463588456405286912/8pzG9zlt.jpeg' />
+    <p class='author-name'>Gabo Esquivel</p>
+    <p class='author-bio'>Desarrollador de Software y Organizador de CostaRicaJS.</p>
+    <p class='author-sites'>
+      <a href='http://twitter.com/gaboesquivel' target='_blank'>twitter</a>
+      
+       <a href='http://gaboesquivel.com' target='_blank'>website</a>
+    </p>
+
+  </div>
+  <div class="clearfix"></div>
+
+
+    
+    <footer>
+      
+
+      <div class="clearfix"></div>
+    </footer>
+  </div>
+</article>
+<!-- hackish -->
+
+  
+<section id="comment">
+          <span class='st_facebook' displayText='Facebook'></span>
+<span class='st_twitter' displayText='Tweet'></span>
+<span class='st_linkedin' displayText='LinkedIn'></span>
+<span class='st_googleplus' displayText='Google +'></span>
+<span class='st_reddit' displayText='Reddit'></span>
+<span class='st_sharethis' displayText='ShareThis'></span>
+<span class='st_email' displayText='Email'></span>
+  <h1 class="title">Comments</h1>
+  <div id="disqus_thread">
+    <noscript>Please enable JavaScript to view the <a href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+  </div>
+</section>
+
+
+</div>
+    <div class="clearfix"></div>
+  </div>
+  <footer id="footer" class="inner"><div class="alignleft">
+  Desarrollado con javascript por <a target="_blank" href="http://gaboesquivel.com" alt="Gabo Esquivel: Javascript Developer">Gabo Esquivel</a>. Contribuye en <a target="_blank" href="http://github.com/costaricajs/costaricajs.github.io">Github</a>.
+
+  
+  &copy; 2015 CostaRicaJS
+  
+</div>
+<div class="clearfix"></div>
+</footer>
+  
+<script type="text/javascript">
+var disqus_shortname = 'costaricajs';
+
+(function(){
+  var dsq = document.createElement('script');
+  dsq.type = 'text/javascript';
+  dsq.async = true;
+  dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+  (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+}());
+</script>
+
+
+<script type="text/javascript">
+(function(){
+    !function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');
+}());
+</script>
+
+
+<a href="https://github.com/CostaRicaJS/costaricajs.github.io"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://camo.githubusercontent.com/a6677b08c955af8400f44c6298f40e7d19cc5b2d/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f72696768745f677261795f3664366436642e706e67" alt="Fork me on GitHub" data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_right_gray_6d6d6d.png"></a>
+
+<script type="text/javascript">var switchTo5x=true;</script>
+<script type="text/javascript" src="http://w.sharethis.com/button/buttons.js"></script>
+<script type="text/javascript">stLight.options({publisher: "37c69562-a76a-4f8f-92f3-633301f43292", doNotHash: false, doNotCopy: false, hashAddressBar: false});</script>
+</body>
+</html>
